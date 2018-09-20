@@ -30,13 +30,13 @@ import os
 import cv2
 from random import shuffle
 
-book='3426930'
+book='3368132'
 
 K.set_image_dim_ordering('th')
 np.random.seed(100)
 random.seed(100)
 
-os.environ["CUDA_VISIBLE_DEVICES"]="3" 
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
           
 
 def euclidean_distance(vects):
@@ -341,6 +341,54 @@ fmap=np.mean(aps)
 print('test map WITHOUT query itself:')    
 print(fmap)
 
+print('start testing p@k WITHOUT query itself')
+
+
+x = x_test.reshape(x_test.shape[0], 1, x_test.shape[1], x_test.shape[2])
+numberOfSubwords = len(np.unique(y_test))
+indices = [np.where(y_test == i)[0] for i in range(numberOfSubwords)]
+print("test number of subwords:" + str(y_test.shape))
+
+for k in range(1, 6):
+
+    precisions = []
+    # k=5
+    for d1 in range(numberOfSubwords):
+        pairs = []
+        labels = []
+        numberOfSamples = len(indices[d1])
+        if numberOfSamples > k + 1:
+
+            for i in range(1, numberOfSamples):
+                z1, z2 = indices[d1][0], indices[d1][i]
+                pairs += [[x[z1], x[z2]]]
+                labels += [0]
+            for d2 in range(numberOfSubwords):
+                if d2 != d1:
+                    numberOfSamples = len(indices[d2])
+                    for j in range(0, numberOfSamples):
+                        z1, z2 = indices[d1][0], indices[d2][j]
+                        pairs += [[x[z1], x[z2]]]
+                        labels += [1]
+            pairs = np.array(pairs)
+            preds = model.predict([pairs[:, 0], pairs[:, 1]], verbose=1)
+            preds = preds.tolist()
+            preds = [item for sublist in preds for item in sublist]
+            order = np.argsort(preds)
+            opairs = pairs[order]
+            # os.makedirs('output/query'+ str(d1))
+            # cv2.imwrite('output/query'+ str(d1)+'/query.png',x[z1].reshape(60,110)*255)
+            # for m in range(0,5):
+            #    cv2.imwrite('output/query'+ str(d1)+'/rank'+str(m) +'.png',opairs[m][1].reshape(60,110)*255)
+            y_true = np.take(labels, order[:k])
+            n_relevant = np.sum(y_true == 0)
+
+            pre = float(n_relevant) / k
+            precisions.append(pre)
+            print(str(pre))
+
+    print('test P at ' + str(k) + ":")
+    print(np.mean(precisions))
 
 
  
