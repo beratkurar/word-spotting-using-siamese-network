@@ -31,16 +31,28 @@ os.environ["CUDA_VISIBLE_DEVICES"]="2"
 ```
 
 ### How to run the project
-1. Create train patches
+1. Crop words from a book in [VML dataset](https://www.cs.bgu.ac.il/~majeek/)
 ```
-python3 TrainPatchExtractor.py
+python3 DatasetMaker.py
 ```
-2. Create test patches
+2. Rename folders
 ```
-python3 TestPatchExtractor.py
+python3 DatasetOutsideRenamer.py
 ```
-3. Train FCN and predict test patches
+2. Create validation set
 ```
-python3 siam.py
+python3 10selector.py
+```
+2. Create train set
+```
+python3 20selector.py
+```
+2. Create out of vocabulary (OOV) test set
+```
+python3 100selector.py
+```
+3. Train FCN and measure mAP on OOV test set
+```
+python3 vmlclmaxmap.py
 ```
 
