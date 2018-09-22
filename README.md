@@ -39,19 +39,19 @@ python3 DatasetMaker.py
 ```
 python3 DatasetOutsideRenamer.py
 ```
-2. Create validation set
+3. Create validation set
 ```
 python3 10selector.py
 ```
-2. Create train set
+4. Create train set
 ```
 python3 20selector.py
 ```
-2. Create out of vocabulary (OOV) test set
+5. Create out of vocabulary (OOV) test set
 ```
 python3 100selector.py
 ```
-3. Train FCN and measure mAP on OOV test set
+6. Train FCN and measure mAP on OOV test set
 ```
 python3 vmlclmaxmap.py
 ```
